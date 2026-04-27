@@ -36,12 +36,14 @@ jobs:
           new_baskets = [baskets_by_id[i] for i in current_ids if i not in known_ids]
           ntfy_topic = os.environ.get("NTFY_TOPIC", "")
           for b in new_baskets:
-              name = b["name"][:100].replace("\n", " ").strip()
+              name = b["name"][:80].replace("\n", " ").strip()
               maps_link = "https://www.google.com/maps?q=" + str(b["lat"]) + "," + str(b["lon"])
+              basket_link = "https://foodsharing.de/essenskoerbe/" + str(b["id"])
+              msg = name + "\n\nKarte: " + maps_link + "\nKorb: " + basket_link
               req2 = urllib.request.Request(
                   "https://ntfy.sh/" + ntfy_topic,
-                  data=name.encode("utf-8"),
-                  headers={"Title": "Neuer Essenskorb Muenchen!", "Tags": "basket", "Click": maps_link}
+                  data=msg.encode("utf-8"),
+                  headers={"Title": "Neuer Essenskorb Muenchen!", "Tags": "basket,food"}
               )
               urllib.request.urlopen(req2)
               print("Sent: " + name)
