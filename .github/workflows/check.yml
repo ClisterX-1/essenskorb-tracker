@@ -39,11 +39,20 @@ jobs:
               name = b["name"][:80].replace("\n", " ").strip()
               maps_link = "https://www.google.com/maps?q=" + str(b["lat"]) + "," + str(b["lon"])
               basket_link = "https://foodsharing.de/essenskoerbe/" + str(b["id"])
-              msg = name + "\n\nKarte: " + maps_link + "\nKorb: " + basket_link
+              payload = json.dumps({
+                  "topic": ntfy_topic,
+                  "message": name,
+                  "title": "Neuer Essenskorb Muenchen!",
+                  "tags": ["basket", "food"],
+                  "actions": [
+                      {"action": "view", "label": "Karte", "url": maps_link, "clear": True},
+                      {"action": "view", "label": "Korb ansehen", "url": basket_link, "clear": False}
+                  ]
+              }).encode("utf-8")
               req2 = urllib.request.Request(
-                  "https://ntfy.sh/" + ntfy_topic,
-                  data=msg.encode("utf-8"),
-                  headers={"Title": "Neuer Essenskorb Muenchen!", "Tags": "basket,food"}
+                  "https://ntfy.sh",
+                  data=payload,
+                  headers={"Content-Type": "application/json"}
               )
               urllib.request.urlopen(req2)
               print("Sent: " + name)
