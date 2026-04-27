@@ -2,7 +2,8 @@ name: Essenskorb Checker Muenchen
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/5 6-18 * * *'
+    - cron: '0,5,10,15,20,25,30,35,40 19 * * *'
   workflow_dispatch:
 
 jobs:
