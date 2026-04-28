@@ -24,38 +24,39 @@ jobs:
           url = "https://foodsharing.de/api/map/markers/baskets"
           req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
           with urllib.request.urlopen(req) as r:
-              all_baskets = json.loads(r.read())
+            all_baskets = json.loads(r.read())
           baskets = [b for b in all_baskets if LAT_MIN <= b["lat"] <= LAT_MAX and LON_MIN <= b["lon"] <= LON_MAX]
           current_ids = {b["id"] for b in baskets}
           baskets_by_id = {b["id"]: b for b in baskets}
           try:
-              with open("known_ids.json") as f:
-                  known_ids = set(json.load(f))
+            with open("known_ids.json") as f:
+              known_ids = set(json.load(f))
           except:
-              known_ids = set()
+            known_ids = set()
           new_baskets = [baskets_by_id[i] for i in current_ids if i not in known_ids]
           ntfy_topic = os.environ.get("NTFY_TOPIC", "")
           for b in new_baskets:
-              name = b["name"][:80].replace("\n", " ").strip()
-              maps_link = "https://www.google.com/maps?q=" + str(b["lat"]) + "," + str(b["lon"])
-              basket_link = "https://foodsharing.de/essenskoerbe/" + str(b["id"])
-              payload = json.dumps({
-                  "message": name,
-                  "title": "Neuer Essenskorb Muenchen!",
-                  "tags": ["basket", "food"],
-                  "actions": [
-                      {"action": "view", "label": "Karte", "url": maps_link, "clear": True},
-                      {"action": "view", "label": "Korb ansehen", "url": basket_link, "clear": False}
-                  ]
-              }).encode("utf-8")
-              ntfy_url = "https://ntfy.sh/" + ntfy_topic
-              req2 = urllib.request.Request(
-ntfy_url,                  headers={"Content-Type": "application/json"}
-              )
-              urllib.request.urlopen(req2)
-              print("Sent: " + name)
+            name = b["name"][:80].replace("\n", " ").strip()
+            maps_link = "https://www.google.com/maps?q=" + str(b["lat"]) + "," + str(b["lon"])
+            basket_link = "https://foodsharing.de/essenskoerbe/" + str(b["id"])
+            payload = json.dumps({
+              "message": name,
+              "title": "Neuer Essenskorb Muenchen!",
+              "tags": ["basket", "food"],
+              "actions": [
+                {"action": "view", "label": "Karte", "url": maps_link, "clear": True},
+                {"action": "view", "label": "Korb ansehen", "url": basket_link, "clear": False}
+              ]
+            }).encode("utf-8")
+            ntfy_url = "https://ntfy.sh/" + ntfy_topic
+            req2 = urllib.request.Request(
+              ntfy_url, data=payload,
+              headers={"Content-Type": "application/json"}
+            )
+            urllib.request.urlopen(req2)
+            print("Sent: " + name)
           with open("known_ids.json", "w") as f:
-              json.dump(list(current_ids), f)
+            json.dump(list(current_ids), f)
           print(str(len(current_ids)) + " baskets, " + str(len(new_baskets)) + " new")
           PYEOF
 
