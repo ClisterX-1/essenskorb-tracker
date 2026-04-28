@@ -48,10 +48,9 @@ jobs:
                       {"action": "view", "label": "Korb ansehen", "url": basket_link, "clear": False}
                   ]
               }).encode("utf-8")
+              ntfy_url = "https://ntfy.sh/" + ntfy_topic
               req2 = urllib.request.Request(
-                  "https://ntfy.s/" + ntfy_topic,
-                  data=payload,
-                  headers={"Content-Type": "application/json"}
+ntfy_url,                  headers={"Content-Type": "application/json"}
               )
               urllib.request.urlopen(req2)
               print("Sent: " + name)
