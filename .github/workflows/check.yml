@@ -40,7 +40,6 @@ jobs:
               maps_link = "https://www.google.com/maps?q=" + str(b["lat"]) + "," + str(b["lon"])
               basket_link = "https://foodsharing.de/essenskoerbe/" + str(b["id"])
               payload = json.dumps({
-                  "topic": ntfy_topic,
                   "message": name,
                   "title": "Neuer Essenskorb Muenchen!",
                   "tags": ["basket", "food"],
@@ -50,7 +49,7 @@ jobs:
                   ]
               }).encode("utf-8")
               req2 = urllib.request.Request(
-                  "https://ntfy.sh",
+                  "https://ntfy.s/" + ntfy_topic,
                   data=payload,
                   headers={"Content-Type": "application/json"}
               )
